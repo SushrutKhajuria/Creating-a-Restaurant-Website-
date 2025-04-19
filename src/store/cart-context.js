@@ -12,26 +12,32 @@ export const CartProvider = ({ children }) => {
 
   const addItemHandler = (item) => {
     setCartItems((prevItems) => {
-      // Check if item already exists in cart
       const existingItemIndex = prevItems.findIndex(
         (prevItem) => prevItem.id === item.id
       );
       
       if (existingItemIndex >= 0) {
-        // Update quantity if item exists
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].amount += item.amount;
         return updatedItems;
       }
       
-      // Add new item if it doesn't exist
       return [...prevItems, item];
     });
   };
 
   const removeItemHandler = (id) => {
-    setCartItems((prevItems) => {
-      return prevItems.filter(item => item.id !== id);
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => item.id === id);
+      if (!existingItem) return prevItems;
+      
+      if (existingItem.amount === 1) {
+        return prevItems.filter(item => item.id !== id);
+      }
+      
+      return prevItems.map(item => 
+        item.id === id ? {...item, amount: item.amount - 1} : item
+      );
     });
   };
 
